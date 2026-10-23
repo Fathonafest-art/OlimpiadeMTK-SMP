@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Style tambahan untuk kotak info durasi */
+    /* Style khusus untuk kotak info durasi di halaman login */
     .info-durasi {
       background: rgba(16, 185, 129, 0.1);
       border: 1px solid var(--primary);
@@ -23,6 +23,7 @@
 </head>
 <body>
 
+  <!-- HEADER -->
   <header class="site-header">
     <div class="header-container">
       <div class="brand">
@@ -32,13 +33,14 @@
           <span class="brand-subtitle">PERFORMING ART 2026</span>
         </div>
       </div>
+      <!-- Tombol Portal Admin -->
       <button class="admin-btn" id="btnAdmin">🔐 Portal Admin</button>
     </div>
   </header>
 
   <main class="main-wrapper">
     
-    <!-- 1. HALAMAN LOGIN -->
+    <!-- ================= 1. HALAMAN LOGIN ================= -->
     <section id="loginScreen" class="screen active">
       <div class="card">
         <div class="card-header">
@@ -46,7 +48,7 @@
           <p>Masukkan Nama dan Asal Sekolah Anda untuk memulai ujian.</p>
         </div>
         
-        <!-- KOTAK INFO DURASI -->
+        <!-- Kotak Info Durasi -->
         <div class="info-durasi">
           ⏱️ Durasi Pengerjaan: <span id="infoDurasi">60</span> Menit
         </div>
@@ -66,7 +68,7 @@
       </div>
     </section>
 
-    <!-- 2. HALAMAN UJIAN -->
+    <!-- ================= 2. HALAMAN UJIAN ================= -->
     <section id="examScreen" class="screen">
       <div class="exam-topbar card">
         <div class="exam-info">
@@ -85,7 +87,9 @@
           <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
         </div>
         
-        <div id="soalContainer" class="soal-container"></div>
+        <div id="soalContainer" class="soal-container">
+          <!-- Soal akan dimuat oleh JavaScript -->
+        </div>
       </div>
 
       <div class="nav-actions mt-20">
@@ -94,7 +98,7 @@
       </div>
     </section>
 
-    <!-- 3. HALAMAN HASIL -->
+    <!-- ================= 3. HALAMAN HASIL (TANPA SKOR) ================= -->
     <section id="resultScreen" class="screen">
       <div class="card text-center">
         <div class="result-icon">✅</div>
@@ -110,7 +114,7 @@
       </div>
     </section>
 
-    <!-- 4. HALAMAN ADMIN -->
+    <!-- ================= 4. HALAMAN ADMIN ================= -->
     <section id="adminScreen" class="screen">
       <div class="card admin-card">
         <div class="admin-header">
@@ -125,14 +129,15 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Waktu</th>
+                <th>Waktu Selesai</th>
                 <th>Nama Peserta</th>
                 <th>Asal Sekolah</th>
                 <th>Skor</th>
+                <th>Durasi Waktu</th> <!-- Kolom Durasi Ditambahkan -->
               </tr>
             </thead>
             <tbody id="adminTableBody">
-              <tr><td colspan="4" class="text-center">Memuat data...</td></tr>
+              <tr><td colspan="5" class="text-center">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -142,10 +147,12 @@
 
   </main>
 
+  <!-- FOOTER -->
   <footer class="site-footer">
     <p>&copy; 2026 Fathona Festival Performing Art. All rights reserved.</p>
   </footer>
 
+  <!-- Memanggil File JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
