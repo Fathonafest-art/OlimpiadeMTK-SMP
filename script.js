@@ -2,14 +2,19 @@
    FATHONA FESTIVAL 2026 - SCRIPT.JS
 ========================================= */
 
-const API_URL = "https://script.google.com/macros/s/AKfycbzMZlUKxNel0s4Tn1z0_qM0OHLB_8vZ5TJ4HYcjmXVTAvwfjohUvEfYeibQRde5C5fTbg/exec"; 
+// URL Web App dari Google Apps Script kamu
+const API_URL = "https://script.google.com/macros/s/AKfycbys1svBzANd8tn3bSn51439C3gA1zSQMM7dCkLf1XI8_eaRERXaRrEitQxfWcL2XWqnlg/exec"; 
 const TOKEN_ADMIN = 'olimpiade-2026-x9k2m';
+
+/* ⚠️ UBAH DURASI UJIAN DI SINI (Dalam Satuan Menit) */
+const DURASI_UJIAN_MENIT = 60; 
 
 let pesertaData = null;
 let soalData = [];
 let jawabanSiswa = {};
 let currentIndex = 0;
 let timerInterval;
+let startTime = 0;
 
 /* ================= NAVIGASI HALAMAN ================= */
 function showScreen(screenId) {
@@ -17,6 +22,15 @@ function showScreen(screenId) {
   document.getElementById(screenId).classList.add('active');
   window.scrollTo(0, 0);
 }
+
+/* Tampilkan info durasi di halaman login saat pertama dibuka */
+document.addEventListener('DOMContentLoaded', () => {
+  const infoDurasi = document.getElementById('infoDurasi');
+  const timerDisplay = document.getElementById('timerDisplay');
+  
+  if (infoDurasi) infoDurasi.innerText = DURASI_UJIAN_MENIT;
+  if (timerDisplay) timerDisplay.innerText = `${DURASI_UJIAN_MENIT}:00`;
+});
 
 /* ================= 1. LOGIN PESERTA ================= */
 async function loginPeserta() {
@@ -62,7 +76,10 @@ async function startExam() {
     if (data.ok) {
       soalData = data.data;
       renderSoal();
-      startTimer(60 * 60); // 60 Menit
+      
+      // Catat waktu mulai untuk menghitung durasi
+      startTime = Date.now(); 
+      startTimer(DURASI_UJIAN_MENIT * 60); 
     } else {
       alert("Gagal memuat soal: " + data.error);
     }
@@ -77,10 +94,12 @@ function renderSoal() {
   const s = soalData[currentIndex];
   const total = soalData.length;
   
+  // Update Progress
   document.getElementById('soalProgress').innerText = `Soal ${currentIndex + 1} dari ${total}`;
   const progressPercent = ((currentIndex + 1) / total) * 100;
   document.getElementById('progressBar').style.width = `${progressPercent}%`;
 
+  // Render HTML Soal & Pilihan
   container.innerHTML = `
     <div class="soal-text">${s.text}</div>
     
@@ -102,6 +121,7 @@ function renderSoal() {
     </label>
   `;
 
+  // Atur tombol navigasi
   document.getElementById('btnPrev').disabled = (currentIndex === 0);
   
   const btnNext = document.getElementById('btnNext');
@@ -148,6 +168,7 @@ function startTimer(duration) {
     
     display.textContent = minutes + ":" + seconds;
     
+    // Jika sisa waktu 5 menit (300 detik), ubah warna jadi merah
     if(timer <= 300) {
       display.style.color = "var(--danger)";
     }
@@ -160,11 +181,15 @@ function startTimer(duration) {
   }, 1000);
 }
 
-/* ================= 5. SUBMIT JAWABAN (TANPA TAMPIL SKOR) ================= */
+/* ================= 5. SUBMIT JAWABAN ================= */
 async function submitUjian() {
   clearInterval(timerInterval);
   
-  // Pindah ke layar sukses, tanpa menampilkan skor
+  // Hitung total durasi pengerjaan (dalam detik)
+  const endTime = Date.now();
+  const durasiDetik = Math.floor((endTime - startTime) / 1000);
+  
+  // Pindah ke layar sukses
   showScreen('resultScreen');
   
   try {
@@ -174,13 +199,13 @@ async function submitUjian() {
         action: 'submit',
         nama: pesertaData.nama,
         sekolah: pesertaData.sekolah,
-        jawaban: jawabanSiswa
+        jawaban: jawabanSiswa,
+        durasi: durasiDetik // Kirim durasi ke server
       })
     });
     
     const data = await res.json();
     
-    // Jika gagal, beri tahu siswa
     if (!data.ok) {
       alert("Gagal menyimpan jawaban: " + data.error + "\n\nSilakan hubungi panitia.");
     }
@@ -203,7 +228,7 @@ document.getElementById('btnAdmin').addEventListener('click', () => {
 
 async function loadAdminData() {
   const tbody = document.getElementById('adminTableBody');
-  tbody.innerHTML = "<tr><td colspan='4' class='text-center'>Memuat data...</td></tr>";
+  tbody.innerHTML = "<tr><td colspan='5' class='text-center'>Memuat data...</td></tr>";
   
   try {
     const res = await fetch(`${API_URL}?action=admin_data&token_admin=${TOKEN_ADMIN}`);
@@ -211,29 +236,42 @@ async function loadAdminData() {
     
     if (data.ok) {
       if (data.data.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='4' class='text-center'>Belum ada siswa yang menyelesaikan ujian.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='5' class='text-center'>Belum ada siswa yang menyelesaikan ujian.</td></tr>";
         return;
       }
       
-      // Urutkan berdasarkan skor tertinggi (Leaderboard)
-      const sortedData = data.data.sort((a, b) => b.skor - a.skor);
+      // LOGIKA SORTING: Skor Tertinggi -> Durasi Tercepat
+      const sortedData = data.data.sort((a, b) => {
+        if (b.skor !== a.skor) {
+          return b.skor - a.skor; // Urutkan skor tertinggi
+        }
+        return a.durasi - b.durasi; // Jika skor sama, urutkan waktu tercepat
+      });
       
-      tbody.innerHTML = sortedData.map((r, index) => {
+      tbody.innerHTML = sortedData.map((r) => {
+        // Warna skor: Hijau jika >= 70, Merah jika di bawah
         const skorColor = r.skor >= 70 ? 'var(--success)' : 'var(--danger)';
+        
+        // Format Durasi: Ubah detik menjadi "Xm Ys"
+        const menit = Math.floor(r.durasi / 60);
+        const detik = r.durasi % 60;
+        const formatDurasi = `${menit}m ${detik}s`;
+        
         return `
           <tr>
             <td>${r.waktu}</td>
             <td><b>${r.nama}</b></td>
             <td>${r.sekolah}</td>
             <td style="font-weight: 800; color: ${skorColor};">${r.skor}</td>
+            <td>⏱️ ${formatDurasi}</td>
           </tr>
         `;
       }).join('');
       
     } else {
-      tbody.innerHTML = `<tr><td colspan='4' class='text-center' style='color:var(--danger)'>Error: ${data.error}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan='5' class='text-center' style='color:var(--danger)'>Error: ${data.error}</td></tr>`;
     }
   } catch (err) {
-    tbody.innerHTML = "<tr><td colspan='4' class='text-center' style='color:var(--danger)'>Gagal terhubung ke server.</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='5' class='text-center' style='color:var(--danger)'>Gagal terhubung ke server.</td></tr>";
   }
 }
