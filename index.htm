@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Olimpiade Matematika | Fathona Festival 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-logo">🏆</div>
+        <div class="brand-text">
+          <span class="brand-title">FATHONA FESTIVAL</span>
+          <span class="brand-subtitle">PERFORMING ART 2026</span>
+        </div>
+      </div>
+      <button class="admin-btn" id="btnAdmin">🔐 Portal Admin</button>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    
+    <!-- 1. HALAMAN LOGIN -->
+    <section id="loginScreen" class="screen active">
+      <div class="card">
+        <div class="card-header">
+          <h2>Olimpiade Matematika</h2>
+          <p>Masukkan Nama dan Asal Sekolah Anda untuk memulai ujian.</p>
+        </div>
+        <div class="input-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="loginNama" placeholder="Masukkan nama sesuai absen">
+        </div>
+        <div class="input-group">
+          <label>Asal Sekolah</label>
+          <input type="text" id="loginSekolah" placeholder="Contoh: SMPN 1 Palembang">
+        </div>
+        <div id="loginMsg" class="msg-error"></div>
+        <button class="btn btn-primary" onclick="loginPeserta()">
+          Masuk Ujian <span>→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. HALAMAN UJIAN -->
+    <section id="examScreen" class="screen">
+      <div class="exam-topbar card">
+        <div class="exam-info">
+          <span class="badge">UJIAN BERLANGSUNG</span>
+          <h3 id="pesertaNama">Memuat...</h3>
+        </div>
+        <div class="timer-box">
+          <span class="timer-label">Sisa Waktu</span>
+          <span class="timer-text" id="timerDisplay">60:00</span>
+        </div>
+      </div>
+
+      <div class="card mt-20">
+        <div class="progress-container">
+          <span id="soalProgress">Soal 1 dari 30</span>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+        </div>
+        
+        <div id="soalContainer" class="soal-container"></div>
+      </div>
+
+      <div class="nav-actions mt-20">
+        <button class="btn btn-outline" id="btnPrev" onclick="prevSoal()">← Sebelumnya</button>
+        <button class="btn btn-primary" id="btnNext" onclick="nextSoal()">Selanjutnya →</button>
+      </div>
+    </section>
+
+    <!-- 3. HALAMAN HASIL (TANPA SKOR) -->
+    <section id="resultScreen" class="screen">
+      <div class="card text-center">
+        <div class="result-icon">✅</div>
+        <h2>Jawaban Berhasil Dikirim!</h2>
+        <p class="text-muted mt-20">Terima kasih telah mengerjakan soal olimpiade dengan jujur.</p>
+        
+        <div class="success-box">
+          Jawaban Anda telah tersimpan di sistem panitia.<br>
+          Silakan tutup halaman ini atau hubungi panitia untuk informasi selanjutnya.
+        </div>
+        
+        <button class="btn btn-primary mt-20" onclick="window.location.reload()">Selesai</button>
+      </div>
+    </section>
+
+    <!-- 4. HALAMAN ADMIN -->
+    <section id="adminScreen" class="screen">
+      <div class="card admin-card">
+        <div class="admin-header">
+          <div>
+            <h2>Portal Admin</h2>
+            <p class="text-muted">Rekapitulasi Nilai Peserta</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="loadAdminData()">🔄 Refresh Data</button>
+        </div>
+        
+        <div class="table-responsive mt-20">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Waktu</th>
+                <th>Nama Peserta</th>
+                <th>Asal Sekolah</th>
+                <th>Skor</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <tr><td colspan="4" class="text-center">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn btn-outline mt-20" onclick="location.reload()">← Kembali ke Depan</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 Fathona Festival Performing Art. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
