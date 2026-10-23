@@ -6,6 +6,20 @@
   <title>Olimpiade Matematika | Fathona Festival 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Style tambahan untuk kotak info durasi */
+    .info-durasi {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--primary);
+      color: var(--primary-hover);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+  </style>
 </head>
 <body>
 
@@ -31,6 +45,12 @@
           <h2>Olimpiade Matematika</h2>
           <p>Masukkan Nama dan Asal Sekolah Anda untuk memulai ujian.</p>
         </div>
+        
+        <!-- KOTAK INFO DURASI -->
+        <div class="info-durasi">
+          ⏱️ Durasi Pengerjaan: <span id="infoDurasi">60</span> Menit
+        </div>
+
         <div class="input-group">
           <label>Nama Lengkap</label>
           <input type="text" id="loginNama" placeholder="Masukkan nama sesuai absen">
@@ -74,7 +94,7 @@
       </div>
     </section>
 
-    <!-- 3. HALAMAN HASIL (TANPA SKOR) -->
+    <!-- 3. HALAMAN HASIL -->
     <section id="resultScreen" class="screen">
       <div class="card text-center">
         <div class="result-icon">✅</div>
